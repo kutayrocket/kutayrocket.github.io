@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KUTAY ROKET | UZAY VE HAVACILIK</title>
+
+    <!-- Tailwind (CDN, sadece deneme/prototip için) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Feather Icons (tek satır yeterli) -->
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    
+    <!-- Google Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;500;700&display=swap"
+        rel="stylesheet">
+    <style>
+        @keyframes glow {
+
+            0%,
+            100% {
+                text-shadow: 0 0 10px #3b82f6, 0 0 20px #3b82f6;
+            }
+
+            50% {
+                text-shadow: 0 0 20px #8b5cf6, 0 0 30px #8b5cf6;
+            }
+        }
+
+        .glow-text {
+            animation: glow 3s ease-in-out infinite alternate;
+        }
+
+        .video-overlay {
+            background: rgba(0, 0, 0, 0.7);
+            background: linear-gradient(135deg, rgba(9, 9, 121, 0.3) 0%, rgba(0, 0, 0, 0.8) 100%);
+        }
+
+        .neon-border {
+            box-shadow: 0 0 10px #3b82f6, 0 0 20px #3b82f6 inset;
+        }
+
+        .neon-border:hover {
+            box-shadow: 0 0 15px #8b5cf6, 0 0 25px #8b5cf6 inset;
+        }
+
+        .input-glow:focus {
+            box-shadow: 0 0 10px #3b82f6;
+            border-color: #3b82f6;
+        }
+
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3);
+        }
+
+        .profile-hover:hover {
+            transform: perspective(1000px) rotateX(5deg) rotateY(-5deg);
+            box-shadow: 0 20px 30px rgba(139, 92, 246, 0.4);
+        }
+
+        ::selection {
+            background: #3b82f6;
+            color: white;
+        }
+
+        /* Gallery Modal Styles */
+        .gallery-image {
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+            cursor: pointer;
+        }
+
+        .gallery-image:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.4);
+        }
+
+        .modal {
+            backdrop-filter: blur(10px);
+        }
+
+        .modal-content {
+            max-height: 90vh;
+            max-width: 90vw;
+            object-fit: contain;
+        }
+
+        /* Gallery navigation buttons */
+        .gallery-nav-btn {
+            background: rgba(0, 0, 0, 0.7);
+            border: 1px solid rgba(59, 130, 246, 0.5);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .gallery-nav-btn:hover {
+            background: rgba(59, 130, 246, 0.2);
+            border-color: #3b82f6;
+            transform: scale(1.1);
+        }
+
+        /* Gallery thumbnails */
+        .gallery-thumbnails {
+            max-height: 120px;
+            overflow-x: auto;
+            scrollbar-width: thin;
+            scrollbar-color: #3b82f6 transparent;
+        }
+
+        .gallery-thumbnails::-webkit-scrollbar {
+            height: 4px;
+        }
+
+        .gallery-thumbnails::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .gallery-thumbnails::-webkit-scrollbar-thumb {
+            background: #3b82f6;
+            border-radius: 2px;
+        }
+
+        .thumbnail {
+            transition: all 0.3s ease;
+            opacity: 0.6;
+        }
+
+        .thumbnail:hover,
+        .thumbnail.active {
+            opacity: 1;
+            transform: scale(1.1);
+            border-color: #3b82f6;
+        }
+
+        /* Animation for modal */
+        @keyframes modalFadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .modal-enter {
+            animation: modalFadeIn 0.3s ease-out;
+        }
+
+        /* Mobile logo fix */
+        .hero-logo {
+            height: 32vw; /* Mobilde ekran genişliğinin %32'si */
+            max-height: 200px; /* Maksimum boyut sınırı */
+            min-height: 120px; /* Minimum boyut garantisi */
+            width: auto;
+        }
+
+        /* Tablet ve üzeri için logo boyutları */
+        @media (min-width: 640px) {
+            .hero-logo {
+                height: 20vw;
+                max-height: 240px;
+                min-height: 140px;
+            }
+        }
+
+        @media (min-width: 768px) {
+            .hero-logo {
+                height: 16vw;
+                max-height: 280px;
+                min-height: 160px;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .hero-logo {
+                height: 200px;
+                max-height: 320px;
+                min-height: 180px;
+            }
+        }
+
+        /* Gallery Grid Styles */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .gallery-item {
+            position: relative;
+            overflow: hidden;
+            border-radius: 1rem;
+            aspect-ratio: 4/3;
+            background: linear-gradient(45deg, #1f2937, #374151);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: all 0.5s ease;
+        }
+
+        .gallery-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(45deg, rgba(59, 130, 246, 0.9), rgba(139, 92, 246, 0.9));
+            opacity: 0;
+            transition: all 0.4s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .gallery-item:hover .gallery-overlay {
+            opacity: 1;
+        }
+
+        .gallery-item:hover img {
+            transform: scale(1.1);
+        }
+
+        .gallery-category {
+            background: rgba(59, 130, 246, 0.2);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            backdrop-filter: blur(10px);
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            margin-bottom: 1rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #3b82f6;
+        }
+
+        /* Filter buttons */
+        .filter-btn {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            color: #9ca3af;
+            transition: all 0.3s ease;
+        }
+
+        .filter-btn:hover,
+        .filter-btn.active {
+            background: rgba(59, 130, 246, 0.2);
+            border-color: #3b82f6;
+            color: #3b82f6;
+            box-shadow: 0 0 10px rgba(59, 130, 246, 0.3);
+        }
+
+        /* Gallery animations */
+        @keyframes galleryFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px) scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .gallery-item.animate-in {
+            animation: galleryFadeIn 0.6s ease-out forwards;
+        }
+    </style>
+</head>
+
+<body class="bg-black text-gray-100 font-['Rajdhani']">
+    <!-- Navigation -->
+    <nav id="navbar" class="fixed w-full z-50 transition-all duration-500 bg-cosmic-dark/90 backdrop-blur-md">
+        <div class="container mx-auto px-6 py-3">
+            <div class="flex justify-between items-center">
+                <a href="#"
+                    class="text-2xl font-orbitron font-bold text-cosmic-primary hover:text-cosmic-accent transition-colors duration-300">
+                    KUTAY<span class="text-white">Roket</span>
+                </a>
+
+                <!-- Desktop Menu -->
+                <div id="menu" class="hidden md:flex space-x-8">
+                    <a href="#home" class="hover:text-cosmic-primary transition-colors duration-300">Ana Sayfa</a>
+                    <a href="#about" class="hover:text-cosmic-primary transition-colors duration-300">Hakkımızda</a>
+                    <a href="#gallery" class="hover:text-cosmic-primary transition-colors duration-300">Galeri</a>
+                    <a href="#team" class="hover:text-cosmic-primary transition-colors duration-300">Takımımız</a>
+                </div>
+
+                <!-- Hamburger -->
+                <button id="hamburger" class="md:hidden focus:outline-none">
+                    <i data-feather="menu" class="text-white hover:text-cosmic-primary w-6 h-6"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-cosmic-dark/90">
+            <a href="#home"
+                class="block px-6 py-3 hover:bg-cosmic-primary hover:text-black transition-colors duration-300">Ana Sayfa</a>
+            <a href="#about"
+                class="block px-6 py-3 hover:bg-cosmic-primary hover:text-black transition-colors duration-300">Hakkımızda</a>
+            <a href="#gallery"
+                class="block px-6 py-3 hover:bg-cosmic-primary hover:text-black transition-colors duration-300">Galeri</a>
+            <a href="#team"
+                class="block px-6 py-3 hover:bg-cosmic-primary hover:text-black transition-colors duration-300">Takımımız</a>
+        </div>
+    </nav>
+    
+    <!-- Hero Section with Video Background -->
+    <section id="home" class="relative h-screen flex items-center justify-center overflow-hidden">
+        <video autoplay muted loop class="absolute z-0 w-auto min-w-full min-h-full max-w-none">
+            <source src="./videos/1000043233.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+        <div class="video-overlay absolute inset-0 z-10"></div>
+        <div class="container mx-auto px-6 z-20 text-center">
+            <div class="flex justify-center mb-8">
+                <a href="#" class="inline-block">
+                    <img src="./images/ddd.png" 
+                         alt="Kutay Roket Logo" 
+                         class="hero-logo object-contain">
+                </a>
+            </div>
+            <p class="text-lg sm:text-xl md:text-2xl max-w-2xl mx-auto mb-10 px-4">
+                Pioneering the future of student rocketry with cutting-edge technology
+            </p>
+            <div class="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-4 px-4">
+                <a href="https://forms.gle/VmohyULPJu8Lezd37"
+                    class="w-full sm:w-auto px-8 py-3 bg-blue-400 text-black rounded-full hover:bg-purple-400 transition-all duration-300 font-bold text-center">
+                    Bize Katıl
+                </a>
+            </div>
+        </div>
+        <div class="absolute bottom-10 left-0 right-0 flex justify-center z-20">
+            <a href="#about" class="animate-bounce">
+                <i data-feather="chevron-down" class="text-blue-400 w-8 h-8 sm:w-10 sm:h-10"></i>
+            </a>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="py-20 bg-gradient-to-b from-black via-gray-900 to-black">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl sm:text-4xl md:text-5xl font-bold font-['Orbitron'] mb-4 text-blue-400">HAKKIMIZDA</h2>
+                <div class="w-20 h-1 bg-purple-400 mx-auto"></div>
+            </div>
+            <div class="flex flex-col lg:flex-row items-center gap-12">
+                <div class="lg:w-1/2" data-aos="fade-right">
+                    <div class="relative">
+                        <img src="./images/aboutphoto.jpg" alt="Rocket Team"
+                            class="rounded-lg neon-border w-full gallery-image" data-gallery="about">
+                        <div
+                            class="absolute -inset-2 border-2 border-blue-400 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="lg:w-1/2" data-aos="fade-left">
+                    <h3 class="text-2xl sm:text-3xl font-bold mb-6 font-['Orbitron']">Süleyman Demirel Üniversitesi Kutay Roket Takımı</h3>
+                    <p class="text-base sm:text-lg mb-6">
+Uzay ve havacılık teknolojilerine ilgi duyan, mühendislik ve bilim alanlarında kendini geliştirmek isteyen Süleyman Demirel Üniversitesi Mühendislik ve Doğa Bilimleri Fakültesi öğrencileri tarafından 2024 yılında kurulmuştur. Takımımız, ülkemizin uzay çalışmalarına katkıda bulunmayı hedefleyen genç ve dinamik bir ekipten oluşmaktadır.
+
+Takımımız, üyelerinin farklı disiplinlerdeki bilgi birikimlerini bir araya getirerek ve özellikle mekanik tasarım, aviyonik sistemler, uçuş sistemleri ve aerodinamik alanlarında çalışmalar yürüterek TEKNOFEST Roket Yarışmasına hazırlanmaktadır. Hazırlık sürecimizde, teorik bilgiyi pratiğe dökerek gerçek mühendislik deneyimleri kazanıyor ve uzay teknolojileri alanında ilerlemeyi hedefliyoruz.
+
+Vizyonumuz, Türkiye'nin uzay çalışmalarına katkı sağlayacak nitelikli mühendisler olarak kendimizi geliştirmek ve gelecekte daha büyük projelere imza atarak uluslararası arenada rekabet edebilecek seviyeye ulaşmaktır. Sürekli öğrenmeye ve gelişime açık bir ekip olarak, sadece yarışmalara katılmakla kalmayıp aynı zamanda ülkemizin uzay alanındaki potansiyelini artıracak çalışmalar yürütmeyi de hedefliyoruz. Kutay Roket Takımı olarak, bilgiye ve bilime olan inancımızla, her geçen gün daha büyük hedeflere ulaşmak için çalışmaya devam edeceğiz!
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Gallery Section -->
+    <section id="gallery" class="py-20 bg-gradient-to-b from-black via-gray-800 to-black">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl sm:text-4xl md:text-5xl font-bold font-['Orbitron'] mb-4 text-blue-400">GALERİMİZ</h2>
+                <div class="w-20 h-1 bg-purple-400 mx-auto"></div>
+            </div>
+
+            <!-- Simple Gallery Grid -->
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                <div class="gallery-photo bg-gray-900 rounded-lg overflow-hidden border border-gray-700 hover:border-blue-400 transition-all duration-300">
+                    <img src="./images/gallery/0905(1).jpg" alt="Galeri Fotoğrafı" class="w-full h-48 object-cover gallery-image cursor-pointer hover:scale-105 transition-transform duration-300" data-gallery="simple">
+                </div>
+                
+                <div class="gallery-photo bg-gray-900 rounded-lg overflow-hidden border border-gray-700 hover:border-blue-400 transition-all duration-300">
+                    <img src="./images/gallery/0905(6).jpg" alt="Galeri Fotoğrafı" class="w-full h-48 object-cover gallery-image cursor-pointer hover:scale-105 transition-transform duration-300" data-gallery="simple">
+                </div>
+                
+                <div class="gallery-photo bg-gray-900 rounded-lg overflow-hidden border border-gray-700 hover:border-blue-400 transition-all duration-300">
+                    <img src="./images/gallery/0905(9).jpg" alt="Galeri Fotoğrafı" class="w-full h-48 object-cover gallery-image cursor-pointer hover:scale-105 transition-transform duration-300" data-gallery="simple">
+                </div>
+                
+                <div class="gallery-photo bg-gray-900 rounded-lg overflow-hidden border border-gray-700 hover:border-blue-400 transition-all duration-300">
+                    <img src="./images/gallery/20250903_073104.jpg" alt="Galeri Fotoğrafı" class="w-full h-48 object-cover gallery-image cursor-pointer hover:scale-105 transition-transform duration-300" data-gallery="simple">
+                </div>
+                
+            </div>
+        </div>
+    </section>
+
+    <!-- Team Section -->
+    <section id="team" class="py-20 bg-gradient-to-b from-black via-gray-900 to-black">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl sm:text-4xl md:text-5xl font-bold font-['Orbitron'] mb-4 text-blue-400">Takımımız</h2>
+                <div class="w-20 h-1 bg-purple-400 mx-auto"></div>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                <!-- Team Member 1 -->
+                <div class="bg-gray-900 rounded-xl p-6 border border-gray-800 profile-hover transition-all duration-500"
+                    data-aos="fade-up">
+                    <div class="w-32 h-32 mx-auto mb-6 rounded-full overflow-hidden border-2 border-blue-400">
+                        <img src="./images/teams/Mehmet Alper Demiray - Akdemik Danışman.jpeg" alt="Team Member"
+                            class="w-full h-full object-cover gallery-image" data-gallery="team">
+                    </div>
+                    <h3 class="text-lg sm:text-xl font-bold text-center mb-1">Dr. Mehmet Alper Demiray</h3>
+                    <p class="text-purple-400 text-center mb-4">Akademik Danışman</p>
+                </div>
+
+                <!-- Team Member 2 -->
+                <div class="bg-gray-900 rounded-xl p-6 border border-gray-800 profile-hover transition-all duration-500"
+                    data-aos="fade-up" data-aos-delay="100">
+                    <div class="w-32 h-32 mx-auto mb-6 rounded-full overflow-hidden border-2 border-purple-400">
+                        <img src="./images/teams/Bora Cüneyit akçakın.jpeg" alt="Team Member"
+                            class="w-full h-full object-cover gallery-image" data-gallery="team">
+                    </div>
+                    <h3 class="text-lg sm:text-xl font-bold text-center mb-1">Bora Cüneyit Akçakın</h3>
+                    <p class="text-blue-400 text-center mb-4">Takım Kaptanı</p>
+                </div>
+
+                <!-- Team Member 3 -->
+                <div class="bg-gray-900 rounded-xl p-6 border border-gray-800 profile-hover transition-all duration-500"
+                    data-aos="fade-up" data-aos-delay="200">
+                    <div class="w-32 h-32 mx-auto mb-6 rounded-full overflow-hidden border-2 border-blue-400">
+                        <img src="./images/teams/Muzaffer şen.jpeg" alt="Team Member"
+                            class="w-full h-full object-cover gallery-image" data-gallery="team">
+                    </div>
+                    <h3 class="text-lg sm:text-xl font-bold text-center mb-1">Muzaffer Şen</h3>
+                    <p class="text-purple-400 text-center mb-4">Mekanik Kaptanı</p>
+                </div>
+                <div class="bg-gray-900 rounded-xl p-6 border border-gray-800 profile-hover transition-all duration-500"
+                    data-aos="fade-up" data-aos-delay="300">
+                    <div class="w-32 h-32 mx-auto mb-6 rounded-full overflow-hidden border-2 border-purple-400">
+                        <img src="./images/teams/Hüdaverdi Furkan Demirci.jpeg" alt="Team Member"
+                            class="w-full h-full object-cover gallery-image" data-gallery="team">
+                    </div>
+                    <h3 class="text-lg sm:text-xl font-bold text-center mb-1">Hüdaverdi Furkan Demirci</h3>
+                    <p class="text-blue-400 text-center mb-4">Aviyonik</p>
+                </div>
+                <div class="bg-gray-900 rounded-xl p-6 border border-gray-800 profile-hover transition-all duration-500"
+                    data-aos="fade-up" data-aos-delay="300">
+                    <div class="w-32 h-32 mx-auto mb-6 rounded-full overflow-hidden border-2 border-purple-400">
+                        <img src="./images/teams/Yağız Muhammet tan.jpeg" alt="Team Member"
+                            class="w-full h-full object-cover gallery-image" data-gallery="team">
+                    </div>
+                    <h3 class="text-lg sm:text-xl font-bold text-center mb-1">Yağız Muhammet Tan</h3>
+                    <p class="text-blue-400 text-center mb-4">Mekanik</p>
+                </div>
+                <div class="bg-gray-900 rounded-xl p-6 border border-gray-800 profile-hover transition-all duration-500"
+                    data-aos="fade-up" data-aos-delay="300">
+                    <div class="w-32 h-32 mx-auto mb-6 rounded-full overflow-hidden border-2 border-purple-400">
+                        <img src="./images/teams/Burak Dokuzlar .jpeg" alt="Team Member"
+                            class="w-full h-full object-cover gallery-image" data-gallery="team">
+                    </div>
+                    <h3 class="text-lg sm:text-xl font-bold text-center mb-1">Burak Dokuzlar</h3>
+                    <p class="text-blue-400 text-center mb-4">Mekanik</p>
+                </div>
+                <div class="bg-gray-900 rounded-xl p-6 border border-gray-800 profile-hover transition-all duration-500"
+                    data-aos="fade-up" data-aos-delay="300">
+                    <div class="w-32 h-32 mx-auto mb-6 rounded-full overflow-hidden border-2 border-purple-400">
+                        <img src="./images/teams/Arzu Sümeyye çiftçi.jpeg" alt="Team Member"
+                            class="w-full h-full object-cover gallery-image" data-gallery="team">
+                    </div>
+                    <h3 class="text-lg sm:text-xl font-bold text-center mb-1">Arzu Sümeyye Çiftçi</h3>
+                    <p class="text-blue-400 text-center mb-4">Aviyonik</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div id="galleryModal" class="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center hidden z-50 modal">
+        <div class="relative w-full h-full flex items-center justify-center p-4">
+            <button id="closeModal" class="absolute top-4 right-4 text-white hover:text-red-400 z-10">
+                <i data-feather="x" class="w-8 h-8"></i>
+            </button>
+            
+            <button id="prevBtn" class="absolute left-4 top-1/2 transform -translate-y-1/2 gallery-nav-btn text-white p-3 rounded-full z-10">
+                <i data-feather="chevron-left" class="w-6 h-6"></i>
+            </button>
+            
+            <button id="nextBtn" class="absolute right-4 top-1/2 transform -translate-y-1/2 gallery-nav-btn text-white p-3 rounded-full z-10">
+                <i data-feather="chevron-right" class="w-6 h-6"></i>
+            </button>
+            
+            <div class="flex flex-col items-center justify-center w-full h-full">
+                <img id="modalImage" src="" alt="" class="modal-content rounded-lg shadow-2xl">
+                
+                <div class="mt-4 text-center text-white bg-black bg-opacity-50 p-4 rounded-lg backdrop-blur-sm">
+                    <h3 id="modalTitle" class="text-xl font-bold mb-2"></h3>
+                    <p id="modalDescription" class="text-gray-300"></p>
+                    <div class="mt-2">
+                        <span id="modalCounter" class="text-blue-400 font-mono"></span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2 w-full max-w-4xl">
+                <div id="thumbnailContainer" class="gallery-thumbnails flex space-x-2 justify-center p-2 bg-black bg-opacity-30 rounded-lg backdrop-blur-sm overflow-x-auto">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 py-12">
+        <div class="container mx-auto px-6">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-6 md:mb-0 text-center md:text-left">
+                    <h3 class="text-2xl font-bold font-['Orbitron'] text-blue-400">KUTAY ROKET</h3>
+                    <p class="text-gray-400 mt-2">Reaching for the stars, one launch at a time.</p>
+                </div>
+                <div class="flex space-x-6">
+                    <a href="https://www.instagram.com/kutayroket" class="text-gray-400 hover:text-purple-400 transition-colors">
+                        <i data-feather="instagram" class="w-6 h-6"></i>
+                    </a>
+                    <a href="https://www.youtube.com/@kutayroket1" class="text-gray-400 hover:text-red-400 transition-colors">
+                        <i data-feather="youtube" class="w-6 h-6"></i>
+                    </a>
+                    <a href="https://www.linkedin.com/company/kutayroket/" class="text-gray-400 hover:text-blue-300 transition-colors">
+                        <i data-feather="linkedin" class="w-6 h-6"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-500">
+                <p>&copy; 2025 KUTAY Roket. Tüm Hakları Saklıdır.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script>
+        // Gallery System
+        class Gallery {
+            constructor() {
+                this.currentIndex = 0;
+                this.currentGallery = '';
+                this.images = [];
+                this.modal = document.getElementById('galleryModal');
+                this.modalImage = document.getElementById('modalImage');
+                this.modalTitle = document.getElementById('modalTitle');
+                this.modalDescription = document.getElementById('modalDescription');
+                this.modalCounter = document.getElementById('modalCounter');
+                this.thumbnailContainer = document.getElementById('thumbnailContainer');
+                this.closeBtn = document.getElementById('closeModal');
+                this.prevBtn = document.getElementById('prevBtn');
+                this.nextBtn = document.getElementById('nextBtn');
+
+                this.initializeGallery();
+                this.bindEvents();
+            }
+
+            initializeGallery() {
+                // Collect all gallery images
+                const galleryImages = document.querySelectorAll('.gallery-image');
+                galleryImages.forEach((img, index) => {
+                    img.addEventListener('click', () => {
+                        this.openGallery(img);
+                    });
+                });
+            }
+
+            bindEvents() {
+                this.closeBtn.addEventListener('click', () => this.closeGallery());
+                this.prevBtn.addEventListener('click', () => this.prevImage());
+                this.nextBtn.addEventListener('click', () => this.nextImage());
+
+                // Keyboard navigation
+                document.addEventListener('keydown', (e) => {
+                    if (!this.modal.classList.contains('hidden')) {
+                        switch (e.key) {
+                            case 'Escape':
+                                this.closeGallery();
+                                break;
+                            case 'ArrowLeft':
+                                this.prevImage();
+                                break;
+                            case 'ArrowRight':
+                                this.nextImage();
+                                break;
+                        }
+                    }
+                });
+
+                // Click outside to close
+                this.modal.addEventListener('click', (e) => {
+                    if (e.target === this.modal) {
+                        this.closeGallery();
+                    }
+                });
+            }
+
+            openGallery(clickedImage) {
+                const galleryType = clickedImage.dataset.gallery;
+                this.currentGallery = galleryType;
+
+                // Collect images from the same gallery
+                this.images = Array.from(document.querySelectorAll(`[data-gallery="${galleryType}"]`));
+                this.currentIndex = this.images.indexOf(clickedImage);
+
+                this.showImage();
+                this.createThumbnails();
+                this.modal.classList.remove('hidden');
+                this.modal.classList.add('modal-enter');
+
+                // Prevent body scroll
+                document.body.style.overflow = 'hidden';
+            }
+
+            closeGallery() {
+                this.modal.classList.add('hidden');
+                this.modal.classList.remove('modal-enter');
+                document.body.style.overflow = 'auto';
+            }
+
+            showImage() {
+                const currentImg = this.images[this.currentIndex];
+                this.modalImage.src = currentImg.src;
+                this.modalImage.alt = currentImg.alt;
+
+                // Update title and description based on context
+                this.updateImageInfo(currentImg);
+
+                // Update counter
+                this.modalCounter.textContent = `${this.currentIndex + 1} / ${this.images.length}`;
+
+                // Update thumbnails
+                this.updateThumbnails();
+            }
+
+            updateImageInfo(img) {
+                const galleryPhoto = img.closest('.gallery-photo');
+                
+                if (galleryPhoto) {
+                    this.modalTitle.textContent = img.alt || 'Galeri Fotoğrafı';
+                    this.modalDescription.textContent = 'Kutay Roket Takımı fotoğraf galeri';
+                } else {
+                    const card = img.closest('.card-hover, .profile-hover') || img.closest('[data-aos]');
+
+                    if (card) {
+                        const title = card.querySelector('h3')?.textContent ||
+                            card.querySelector('h2')?.textContent ||
+                            img.alt;
+                        const description = card.querySelector('p')?.textContent ||
+                            'Click to explore our gallery';
+
+                        this.modalTitle.textContent = title;
+                        this.modalDescription.textContent = description;
+                    } else {
+                        this.modalTitle.textContent = img.alt;
+                        this.modalDescription.textContent = `${this.currentGallery.charAt(0).toUpperCase() + this.currentGallery.slice(1)} Gallery`;
+                    }
+                }
+            }
+
+            createThumbnails() {
+                this.thumbnailContainer.innerHTML = '';
+
+                this.images.forEach((img, index) => {
+                    const thumb = document.createElement('img');
+                    thumb.src = img.src;
+                    thumb.alt = img.alt;
+                    thumb.className = `thumbnail w-16 h-16 object-cover rounded-lg border-2 border-transparent cursor-pointer transition-all duration-300 ${index === this.currentIndex ? 'active' : ''}`;
+
+                    thumb.addEventListener('click', () => {
+                        this.currentIndex = index;
+                        this.showImage();
+                    });
+
+                    this.thumbnailContainer.appendChild(thumb);
+                });
+            }
+
+            updateThumbnails() {
+                const thumbnails = this.thumbnailContainer.querySelectorAll('.thumbnail');
+                thumbnails.forEach((thumb, index) => {
+                    thumb.classList.toggle('active', index === this.currentIndex);
+                });
+
+                // Scroll thumbnail into view
+                const activeThumbnail = thumbnails[this.currentIndex];
+                if (activeThumbnail) {
+                    activeThumbnail.scrollIntoView({ behavior: 'smooth', inline: 'center' });
+                }
+            }
+
+            prevImage() {
+                this.currentIndex = (this.currentIndex - 1 + this.images.length) % this.images.length;
+                this.showImage();
+            }
+
+            nextImage() {
+                this.currentIndex = (this.currentIndex + 1) % this.images.length;
+                this.showImage();
+            }
+        }
+
+        // Initialize Gallery
+        document.addEventListener('DOMContentLoaded', () => {
+            new Gallery();
+        });
+
+        // Hamburger ve mobil menü
+        const hamburger = document.getElementById('hamburger');
+        const mobileMenu = document.getElementById('mobile-menu');
+
+        hamburger.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // Navbar scroll efekti
+        window.addEventListener('scroll', function () {
+            const navbar = document.getElementById('navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('bg-gray-900', 'shadow-lg');
+                navbar.classList.remove('bg-cosmic-dark/90');
+            } else {
+                navbar.classList.remove('bg-gray-900', 'shadow-lg');
+                navbar.classList.add('bg-cosmic-dark/90');
+            }
+        });
+
+        // Feather Icons
+        feather.replace();
+
+        // Smooth scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth' });
+                    if (!mobileMenu.classList.contains('hidden')) {
+                        mobileMenu.classList.add('hidden');
+                    }
+                }
+            });
+        });
+    </script>
+
+</body>
+
+</html>
